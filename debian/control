@@ -1,0 +1,13 @@
+Source: cnijfilter2
+Section: graphics
+Priority: optional
+Maintainer: Canon Inc. <sup-debian@mail.canon>
+Build-Depends: debhelper (>= 5.0.0), libcups2-dev
+Standards-Version: 3.7.2
+
+Package: cnijfilter2
+Architecture: amd64 i386 arm64 mips64el
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: IJ Printer Driver for Linux.
+ This IJ Printer Driver provides printing functions for Canon Inkjet
+ printers operating under the CUPS (Common UNIX Printing System) environment.

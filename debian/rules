@@ -1,0 +1,208 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+# Sample debian/rules that uses debhelper.
+# This file was originally written by Joey Hess and Craig Small.
+# As a special exception, when this file is copied by dh-make into a
+# dh-make output file, you may use that output file without restriction.
+# This special exception was added by Craig Small in version 0.37 of dh-make.
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+ifeq ($(DEB_HOST_ARCH), amd64)
+  _arc=_x86_64
+  ifneq ($(DEB_HOST_ARCH), $(DEB_BUILD_ARCH))
+    conf_option = "--host=x86_64-linux-gnu-gcc"
+  endif
+else ifeq ($(DEB_HOST_ARCH), i386)
+  _arc=_i686
+  ifneq ($(DEB_HOST_ARCH), $(DEB_BUILD_ARCH))
+    conf_option = "--host=i686-linux-gnu"
+  endif
+else ifeq ($(DEB_HOST_ARCH), arm64)
+  _arc=_aarch64
+  ifneq ($(DEB_HOST_ARCH), $(DEB_BUILD_ARCH))
+    conf_option = "--host=aarch64-linux-gnu"
+  endif
+else ifeq ($(DEB_HOST_ARCH), mips64el)
+  _arc=_mips64
+  ifneq ($(DEB_HOST_ARCH), $(DEB_BUILD_ARCH))
+    conf_option = "--host=mips64el-linux-gnuabi64"
+  endif
+endif
+
+# define package name
+COMMON_PKG=cnijfilter2
+
+configure: configure-stamp
+configure-stamp:
+	dh_testdir
+	# Add here commands to configure the package.
+
+	### configure 
+	if [ -z $(nobuild) ] ; then \
+		@echo "######## configure cmdtocanonij2"; \
+		(cd ./cmdtocanonij2; ./autogen.sh --prefix=/usr --datadir=/usr/share LDFLAGS="-L../../com/libs_bin${_arc}" $(conf_option)); \
+		@echo "######## configure cmdtocanonij3"; \
+		(cd ./cmdtocanonij3; ./autogen.sh --prefix=/usr --datadir=/usr/share LDFLAGS="-L../../com/libs_bin${_arc}" $(conf_option)); \
+		@echo "######## configure cnijbe2"; \
+		(cd ./cnijbe2; ./autogen.sh --prefix=/usr --enable-progpath=/usr/bin $(conf_option)); \
+		@echo "######## configure lgmon3"; \
+		(cd ./lgmon3; ./autogen.sh --prefix=/usr --enable-progpath=/usr/bin --enable-libpath=/usr/lib/bjlib2 --datadir=/usr/share LDFLAGS="-L../../com/libs_bin${_arc}" $(conf_option)); \
+		@echo "######## rastertocanonij"; \
+		(cd ./rastertocanonij; ./autogen.sh --prefix=/usr --enable-progpath=/usr/bin $(conf_option)); \
+		@echo "######## tocanonij"; \
+		(cd ./tocanonij; ./autogen.sh --prefix=/usr --enable-progpath=/usr/bin $(conf_option)); \
+		@echo "######## tocnpwg"; \
+		(cd ./tocnpwg; ./autogen.sh --prefix=/usr --enable-progpath=/usr/bin $(conf_option)); \
+	fi
+
+	touch configure-stamp
+
+
+build: build-stamp
+build-stamp: configure-stamp 
+	dh_testdir
+
+	### compile common package
+	if [ -z $(nobuild) ] ; then \
+		@echo "######## compile cmdtocanonij2"; \
+		(cd ./cmdtocanonij2; make); \
+		@echo "######## compile cmdtocanonij3"; \
+		(cd ./cmdtocanonij3; make); \
+		@echo "######## compile cnijbe2"; \
+		(cd ./cnijbe2; make); \
+		@echo "######## compile lgmon3"; \
+		(cd ./lgmon3; make); \
+		@echo "######## compile rastertocanonij"; \
+		(cd ./rastertocanonij; make); \
+		@echo "######## compile tocanonij"; \
+		(cd ./tocanonij; make); \
+		@echo "######## compile tocnpwg"; \
+		(cd ./tocnpwg; make); \
+	fi
+
+	touch $@
+
+clean:
+	dh_testdir
+	dh_testroot
+	rm -f build-stamp configure-stamp
+
+	# Add here commands to clean up after the build process.
+	#-$(MAKE) clean
+	-(cd ./cmdtocanonij2; make clean)
+	-(cd ./cmdtocanonij3; make clean)
+	-(cd ./cnijbe2; make clean)
+	-(cd ./lgmon3; make clean)
+	-(cd ./rastertocanonij; make clean)
+	-(cd ./tocanonij; make clean)
+	-(cd ./tocnpwg; make clean)
+
+	dh_clean 
+
+install: build
+	dh_testdir
+	dh_testroot
+	dh_clean -k 
+	dh_installdirs
+	dh_install -s
+
+	mkdir -p $(CURDIR)/debian/${COMMON_PKG}/usr/bin
+	mkdir -p $(CURDIR)/debian/${COMMON_PKG}/usr/lib
+	mkdir -p $(CURDIR)/debian/${COMMON_PKG}/usr/lib/bjlib2
+	mkdir -p $(CURDIR)/debian/${COMMON_PKG}/usr/lib/cups/backend
+	mkdir -p $(CURDIR)/debian/${COMMON_PKG}/usr/lib/cups/filter
+	mkdir -p $(CURDIR)/debian/${COMMON_PKG}/usr/share/cnijlgmon3
+	mkdir -p $(CURDIR)/debian/${COMMON_PKG}/usr/share/cmdtocanonij2
+	mkdir -p $(CURDIR)/debian/${COMMON_PKG}/usr/share/cmdtocanonij3
+	mkdir -p $(CURDIR)/debian/${COMMON_PKG}/usr/share/ppd
+	mkdir -p $(CURDIR)/debian/${COMMON_PKG}/usr/share/locale/de/LC_MESSAGES
+	mkdir -p $(CURDIR)/debian/${COMMON_PKG}/usr/share/locale/fr/LC_MESSAGES
+	mkdir -p $(CURDIR)/debian/${COMMON_PKG}/usr/share/locale/ja/LC_MESSAGES
+	mkdir -p $(CURDIR)/debian/${COMMON_PKG}/usr/share/locale/zh/LC_MESSAGES
+
+	### install common package
+	if [ -z $(nobuild) ] ; then \
+		@echo "######## install cmdtocanonij2"; \
+		(cd ./cmdtocanonij2; make install DESTDIR=$(CURDIR)/debian/${COMMON_PKG}); \
+		@echo "######## install cmdtocanonij3"; \
+		(cd ./cmdtocanonij3; make install DESTDIR=$(CURDIR)/debian/${COMMON_PKG}); \
+		@echo "######## install cnijbe2"; \
+		(cd ./cnijbe2; make install DESTDIR=$(CURDIR)/debian/${COMMON_PKG}); \
+		@echo "######## install lgmon3"; \
+		(cd ./lgmon3; make install DESTDIR=$(CURDIR)/debian/${COMMON_PKG}); \
+		@echo "######## install rastertocanonij"; \
+		(cd ./rastertocanonij; make install DESTDIR=$(CURDIR)/debian/${COMMON_PKG}); \
+		@echo "######## install tocanonij"; \
+		(cd ./tocanonij; make install DESTDIR=$(CURDIR)/debian/${COMMON_PKG}); \
+		@echo "######## install tocnpwg"; \
+		(cd ./tocnpwg; make install DESTDIR=$(CURDIR)/debian/${COMMON_PKG}); \
+	else \
+		install -c -m 755 com/libs_bin${_arc}/cmdtocanonij2 $(CURDIR)/debian/${COMMON_PKG}/usr/lib/cups/filter;\
+		install -c -m 755 com/libs_bin${_arc}/cmdtocanonij3 $(CURDIR)/debian/${COMMON_PKG}/usr/lib/cups/filter;\
+		install -c -m 755 com/libs_bin${_arc}/rastertocanonij $(CURDIR)/debian/${COMMON_PKG}/usr/lib/cups/filter;\
+		install -c -m 755 com/libs_bin${_arc}/cnijbe2 $(CURDIR)/debian/${COMMON_PKG}/usr/lib/cups/backend;\
+		install -c -m 755 com/libs_bin${_arc}/tocanonij $(CURDIR)/debian/${COMMON_PKG}/usr/bin;\
+		install -c -m 755 com/libs_bin${_arc}/tocnpwg $(CURDIR)/debian/${COMMON_PKG}/usr/bin;\
+		install -c -m 755 com/libs_bin${_arc}/cnijlgmon3 $(CURDIR)/debian/${COMMON_PKG}/usr/bin;\
+		install -c -m 644 cmdtocanonij2/utilfiles/*.utl $(CURDIR)/debian/${COMMON_PKG}/usr/share/cmdtocanonij2; \
+		install -c -m 644 cmdtocanonij3/utilfiles/*.utl $(CURDIR)/debian/${COMMON_PKG}/usr/share/cmdtocanonij3; \
+		install -c -m 644 lgmon3/keytext/*.res $(CURDIR)/debian/${COMMON_PKG}/usr/share/cnijlgmon3; \
+		install -c -m 644 com/libs_bin${_arc}/de/LC_MESSAGES/cnijlgmon3.mo $(CURDIR)/debian/${COMMON_PKG}/usr/share/locale/de/LC_MESSAGES; \
+		install -c -m 644 com/libs_bin${_arc}/fr/LC_MESSAGES/cnijlgmon3.mo $(CURDIR)/debian/${COMMON_PKG}/usr/share/locale/fr/LC_MESSAGES; \
+		install -c -m 644 com/libs_bin${_arc}/ja/LC_MESSAGES/cnijlgmon3.mo $(CURDIR)/debian/${COMMON_PKG}/usr/share/locale/ja/LC_MESSAGES; \
+		install -c -m 644 com/libs_bin${_arc}/zh/LC_MESSAGES/cnijlgmon3.mo $(CURDIR)/debian/${COMMON_PKG}/usr/share/locale/zh/LC_MESSAGES; \
+	fi
+
+	@echo "######## install library ini ppd"; \
+	install -c -m 644 -o lp -g lp com/ini/cnnet.ini $(CURDIR)/debian/${COMMON_PKG}/usr/lib/bjlib2; \
+	install -c -m 755 com/libs_bin${_arc}/libcnnet2.so.* $(CURDIR)/debian/${COMMON_PKG}/usr/lib; \
+	install -c -m 755 com/libs_bin${_arc}/libcnbpnet20.so.* $(CURDIR)/debian/${COMMON_PKG}/usr/lib; \
+	install -c -m 755 com/libs_bin${_arc}/libcnbpnet30.so.* $(CURDIR)/debian/${COMMON_PKG}/usr/lib; \
+	install -c -m 755 com/libs_bin${_arc}/libcnbpcnclapicom2.so.* $(CURDIR)/debian/${COMMON_PKG}/usr/lib; \
+	install -c -m 644 -o lp -g lp ppd/*.ppd $(CURDIR)/debian/${COMMON_PKG}/usr/share/ppd; \
+
+	# Add here commands to install the package into debian/cnijfilter-common.
+	#$(MAKE) install DESTDIR=$(CURDIR)/debian/cnijfilter-common
+
+
+	touch $@
+
+# Build architecture-independent files here.
+binary-indep: build install
+# We have nothing to do by default.
+
+# Build architecture-dependent files here.
+binary-arch: build install
+	dh_testdir
+	dh_testroot
+	dh_installchangelogs 
+	dh_installdocs
+	dh_installexamples
+#	dh_install
+#	dh_installmenu
+#	dh_installdebconf	
+#	dh_installlogrotate
+#	dh_installemacsen
+#	dh_installpam
+#	dh_installmime
+#	dh_python
+#	dh_installinit
+#	dh_installcron
+#	dh_installinfo
+	dh_installman
+	dh_link
+	dh_strip
+	dh_compress -X.txt
+	dh_fixperms --exclude=bscc --exclude=cnnet.ini
+#	dh_perl
+#	dh_makeshlibs
+	dh_installdeb
+	dh_shlibdeps
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+binary: binary-indep binary-arch
+.PHONY: build clean binary-indep binary-arch binary install configure

@@ -1,0 +1,22 @@
+#!/bin/sh
+
+_cups_path2=/usr/share/cups/model
+ppd_files="canongx6000.ppd canontr4600.ppd canone480.ppd canonts8100.ppd canong2060.ppd canonts9000.ppd canonts8530.ppd canonts8300.ppd canonts8180.ppd canonxk60.ppd canong5080.ppd canone3300.ppd canontr703.ppd canonip110.ppd canonmg5700.ppd canontr8580.ppd canongm2080.ppd canonts7430.ppd canontr4500.ppd canonxk100.ppd canontr9530.ppd canontr8630.ppd canonts6300.ppd canonts6100.ppd canonts5350i.ppd canonxk90.ppd canonts7400.ppd canong4000.ppd canonts300.ppd canonts8230.ppd canonxk80.ppd canongm4000.ppd canong6000.ppd canonxk50.ppd canongm4080.ppd canontr8500.ppd canonts6000.ppd canone3400.ppd canone300.ppd canong2020.ppd canonts6380.ppd canonts6280.ppd canonts6200.ppd canonts5300.ppd canonts5000.ppd canong600.ppd canonxk70.ppd canone3100.ppd canong7080.ppd canone4200.ppd canonib4000.ppd canontr8600.ppd canong3020.ppd canontr7500.ppd canonmg3000.ppd canonmg6600.ppd canontr8530.ppd canonib4100.ppd canonmb5100.ppd canone4500.ppd canonmx490.ppd canontr7530.ppd canonts7450i.ppd canonmg3600.ppd canongx7000.ppd canong4010.ppd canontr150.ppd canonmb2000.ppd canonts6130.ppd canonts5100.ppd canonts708.ppd canonts8430.ppd canong3010.ppd canonmg6800.ppd canongm2000.ppd canone470.ppd canonts7530.ppd canonmg2900.ppd canonts9580.ppd canonxk500.ppd canonts6180.ppd canontr7000.ppd canonts3300.ppd canong1020.ppd canonts8330.ppd canonmg7500.ppd canonts8000.ppd canone460.ppd canong5000.ppd canonts8200.ppd canonts9180.ppd canonmg6900.ppd canonmg7700.ppd canonts9500.ppd canonts6330.ppd canonts8380.ppd canontr7600.ppd canontr4700.ppd canonts700.ppd canonts3400.ppd canonts6400.ppd canong3060.ppd canonts9100.ppd canone200.ppd canong500.ppd canonts5400.ppd canonmb5000.ppd canonmb2100.ppd canonts3100.ppd canong6080.ppd canonmg5600.ppd canonts8130.ppd canonts5380.ppd canonmb2300.ppd canong3000.ppd canonmb5300.ppd canong7000.ppd canonts8280.ppd canonts200.ppd canonmb5400.ppd canonts6230.ppd canonts3500.ppd canonts7330.ppd canonmb2700.ppd "
+
+if [ -x /sbin/ldconfig ]; then
+	/sbin/ldconfig
+fi
+# remove cnbp* libs
+for LIBS in libcnnet2 libcnbpcnclapicom2 libcnbpnet20 libcnbpnet30
+do
+	if [ -h /usr/lib/${LIBS}.so ]; then
+		rm -f /usr/lib/${LIBS}.so
+	fi	
+done
+if [ "$1" = 0 ] ; then
+	rmdir -p --ignore-fail-on-non-empty /usr/lib/bjlib
+fi
+# remove symbolic link for ppd
+for f in ${ppd_files}; do
+	rm -f ${_cups_path2}/${f}
+done
